@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.a9ski</groupId>
+	<artifactId>jeebase</artifactId>
+	<packaging>war</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>jeebase</name>
+	<url>https://github.com/thexman/jeebase</url>
+	<inceptionYear>2017</inceptionYear>
+	<organization>
+		<name>Kiril Arabadzhiyski</name>
+		<url>http://www.a9ski.com</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>thexman</id>
+			<name>Kiril Arabadzhiyski</name>
+			<email>thexman@dir.bg</email>
+			<url>https://github.com/thexman</url>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/thexman/jeebase</url>
+		<connection>scm:git:ssh://git@github.com/thexman/jeebase.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/thexman/jeebase.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+
+	<licenses>
+		<license>
+			<name>apache_v2</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	
+
+	<properties>
+		<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss'Z'</maven.build.timestamp.format>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<buildId>${os.name}-${os.arch}-${java.vendor}-${java.version}-maven-${maven.version}</buildId>
+		<commitId>0000000000000000000000000000000000000000</commitId>
+	</properties>
+
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/javax/javaee-api -->
+		<dependency>
+		    <groupId>javax</groupId>
+		    <artifactId>javaee-api</artifactId>
+		    <version>8.0</version>
+		    <scope>provided</scope>
+		</dependency>
+	
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.a9ski.utils</groupId>
+			<artifactId>jpa</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<version>4.2.0</version>
+				<configuration>
+					<locations>filesystem:db/scripts</locations>
+					<url>jdbc:mariadb://localhost:3306/jee</url>
+					<user>jee</user>
+					<password>abcd1234</password>
+				</configuration>
+
+
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>META-INF/buildinfo.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>${basedir}/src/main/resources</directory>
+				<excludes>
+					<exclude>META-INF/buildinfo.properties</exclude>
+				</excludes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+
+		<testResources>
+			<testResource>
+				<directory>${basedir}/src/test/resources</directory>
+				<filtering>false</filtering>
+			</testResource>
+		</testResources>
+
+
+	</build>
+
+
+
+</project>

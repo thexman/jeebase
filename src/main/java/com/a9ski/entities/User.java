@@ -2,6 +2,9 @@ package com.a9ski.entities;
 
 import java.util.Locale;
 
+import javax.json.bind.annotation.JsonbPropertyOrder;
+import javax.json.bind.annotation.JsonbTransient;
+import javax.json.bind.config.PropertyOrderStrategy;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -13,13 +16,14 @@ import com.a9ski.jpa.LocaleConverter;
 import com.a9ski.jpa.NamedTimeZoneConverter;
 import com.a9ski.utils.TimeZoneList.NamedTimeZone;
 
+@JsonbPropertyOrder(PropertyOrderStrategy.LEXICOGRAPHICAL)
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "users")
 public class User extends AuditableEntity {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3260478782599962812L;
 
@@ -35,13 +39,16 @@ public class User extends AuditableEntity {
 	@Column(name = "email")
 	private String email;
 
+	@JsonbTransient
 	@Column(name = "password")
 	private String password;
 
+	@JsonbTransient
 	@Column(name = "locale")
 	@Convert(converter = LocaleConverter.class)
 	private Locale locale;
 
+	@JsonbTransient
 	@Column(name = "timezone")
 	@Convert(converter = NamedTimeZoneConverter.class)
 	private NamedTimeZone timeZone;
@@ -57,7 +64,7 @@ public class User extends AuditableEntity {
 	 * @param login
 	 *            the login to set
 	 */
-	public void setLogin(String login) {
+	public void setLogin(final String login) {
 		this.login = login;
 	}
 
@@ -72,7 +79,7 @@ public class User extends AuditableEntity {
 	 * @param firstName
 	 *            the firstName to set
 	 */
-	public void setFirstName(String firstName) {
+	public void setFirstName(final String firstName) {
 		this.firstName = firstName;
 	}
 
@@ -87,7 +94,7 @@ public class User extends AuditableEntity {
 	 * @param lastName
 	 *            the lastName to set
 	 */
-	public void setLastName(String lastName) {
+	public void setLastName(final String lastName) {
 		this.lastName = lastName;
 	}
 
@@ -102,7 +109,7 @@ public class User extends AuditableEntity {
 	 * @param email
 	 *            the email to set
 	 */
-	public void setEmail(String email) {
+	public void setEmail(final String email) {
 		this.email = email;
 	}
 
@@ -117,7 +124,7 @@ public class User extends AuditableEntity {
 	 * @param locale
 	 *            the locale to set
 	 */
-	public void setLocale(Locale locale) {
+	public void setLocale(final Locale locale) {
 		this.locale = locale;
 	}
 
@@ -132,13 +139,13 @@ public class User extends AuditableEntity {
 	 * @param timeZone
 	 *            the timeZone to set
 	 */
-	public void setTimeZone(NamedTimeZone timeZone) {
+	public void setTimeZone(final NamedTimeZone timeZone) {
 		this.timeZone = timeZone;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -156,11 +163,11 @@ public class User extends AuditableEntity {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -170,7 +177,7 @@ public class User extends AuditableEntity {
 		if (!(obj instanceof User)) {
 			return false;
 		}
-		User other = (User) obj;
+		final User other = (User) obj;
 		if (email == null) {
 			if (other.email != null) {
 				return false;

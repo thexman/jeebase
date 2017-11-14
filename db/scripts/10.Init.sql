@@ -17,7 +17,7 @@ CREATE TABLE users (
     "created" TIMESTAMP,
     "editor" INTEGER,
     "edited" TIMESTAMP,
-    "isdeleted" BOOLEAN DEFAULT FALSE,	
+    "deleted" BOOLEAN DEFAULT FALSE,	
     "version" INTEGER DEFAULT 0,
 
 	CONSTRAINT pk_user PRIMARY KEY("id"),
@@ -34,7 +34,7 @@ CREATE TABLE roles (
     "created" TIMESTAMP,
     "editor" INTEGER,
     "edited" TIMESTAMP,
-    "isdeleted" BOOLEAN DEFAULT FALSE,	
+    "deleted" BOOLEAN DEFAULT FALSE,	
     "version" INTEGER DEFAULT 0,
 
 	CONSTRAINT pk_role PRIMARY KEY("id"),
@@ -60,14 +60,14 @@ CREATE TABLE user_roles (
 	CONSTRAINT fk_user_role_roleid FOREIGN KEY ("roleid") REFERENCES roles("id")
 );
 
-CREATE VIEW user_access AS SELECT u.login, u.password, r.name AS rolename, p.permission FROM user_roles rel INNER JOIN users u ON u.id = rel.userid AND u.isdeleted = false INNER JOIN roles r ON r.id = rel.roleid AND r.isdeleted = false INNER JOIN role_permissions p ON r.id = p.roleid;
+CREATE VIEW user_access AS SELECT u.login, u.password, r.name AS rolename, p.permission FROM user_roles rel INNER JOIN users u ON u.id = rel.userid AND u.deleted = false INNER JOIN roles r ON r.id = rel.roleid AND r.deleted = false INNER JOIN role_permissions p ON r.id = p.roleid;
 
 -- password is abcd1234
-INSERT INTO users(id, login, timezone, locale, password, firstname, lastname, email, creator, created, editor, edited, isdeleted, version) values (1, 'admin', 'UTC', 'en-US', 'e9cee71ab932fde863338d08be4de9dfe39ea049bdafb342ce659ec5450b69ae', 'Root', 'Admin', 'admin@localhost', 1, NOW(), 1, NOW(), 0, 1);
-INSERT INTO roles(id, name, creator, created, editor, edited, isdeleted, version) values (1, 'Administrators', 1, NOW(), 1, NOW(), 0, 1);
-INSERT INTO roles(id, name, creator, created, editor, edited, isdeleted, version) values (2, 'PowerUsers', 1, NOW(), 1, NOW(), 0, 1);
-INSERT INTO roles(id, name, creator, created, editor, edited, isdeleted, version) values (3, 'Users', 1, NOW(), 1, NOW(), 0, 1);
-INSERT INTO roles(id, name, creator, created, editor, edited, isdeleted, version) values (4, 'Guests', 1, NOW(), 1, NOW(), 0, 1);
+INSERT INTO users(id, login, timezone, locale, password, firstname, lastname, email, creator, created, editor, edited, deleted, version) values (1, 'admin', 'UTC', 'en-US', 'e9cee71ab932fde863338d08be4de9dfe39ea049bdafb342ce659ec5450b69ae', 'Root', 'Admin', 'admin@localhost', 1, NOW(), 1, NOW(), 0, 1);
+INSERT INTO roles(id, name, creator, created, editor, edited, deleted, version) values (1, 'Administrators', 1, NOW(), 1, NOW(), 0, 1);
+INSERT INTO roles(id, name, creator, created, editor, edited, deleted, version) values (2, 'PowerUsers', 1, NOW(), 1, NOW(), 0, 1);
+INSERT INTO roles(id, name, creator, created, editor, edited, deleted, version) values (3, 'Users', 1, NOW(), 1, NOW(), 0, 1);
+INSERT INTO roles(id, name, creator, created, editor, edited, deleted, version) values (4, 'Guests', 1, NOW(), 1, NOW(), 0, 1);
 
 insert into role_permissions(roleid, permission) values (1, 'LOGIN');
 insert into role_permissions(roleid, permission) values (1, 'LIST_USERS');

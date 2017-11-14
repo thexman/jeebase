@@ -8,6 +8,8 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Path;
+import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
 
 import com.a9ski.entities.User;
 import com.a9ski.entities.UserFilter;
@@ -32,21 +34,33 @@ public class UserService extends AbstractService {
 		return em;
 	}
 
-	public long countUsers(final UserFilter filter) {
-		return jpa.countEntities(filter, this::createUserPredicates, User.class);
+	private UserFilter getFilter(final UserFilter filter) {
+		return getFilter(filter, UserFilter.class);
 	}
 
-	public List<User> listUsers(final UserFilter filter) {
-		return jpa.listEntities(filter, this::createUserPredicates, User.class);
+	@GET
+	@javax.ws.rs.Path("count")
+	public long countUsers(@QueryParam("filter") final UserFilter filter) {
+		return jpa.countEntities(getFilter(filter), this::createUserPredicates, User.class);
+	}
+
+	@GET
+	@javax.ws.rs.Path("list")
+	public List<User> listUsers(@QueryParam("filter") final UserFilter filter) {
+		return jpa.listEntities(getFilter(filter), this::createUserPredicates, User.class);
 	}
 
 	private QueryConfig createUserPredicates(final CriteriaApiObjects<User> cao, final UserFilter filter) {
 		final Path<User> user = cao.getPath();
 		final CriteriaBuilderHelper cbh = jpa.addAuditableEntityPredicates(cao.getCriteriaBuilder(), user, filter);
-		cbh.add(user.get(User_.login), filter.getLogin());
-		cbh.add(user.get(User_.firstName), filter.getFirstName());
-		cbh.add(user.get(User_.lastName), filter.getLastName());
-		cbh.add(user.get(User_.email), filter.getEmail());
+
+		if (filter != null) {
+			cbh.add(user.get(User_.login), filter.getLogin());
+			cbh.add(user.get(User_.firstName), filter.getFirstName());
+			cbh.add(user.get(User_.lastName), filter.getLastName());
+			cbh.add(user.get(User_.email), filter.getEmail());
+		}
+
 		return new QueryConfig(cbh.getPredicates(), null, null, true);
 	}
 

@@ -8,6 +8,7 @@ import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Path;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Produces;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import com.a9ski.entities.User;
 import com.a9ski.entities.UserFilter;
 import com.a9ski.entities.User_;
+import com.a9ski.exceptions.ObjectAlreadyModifiedException;
 import com.a9ski.jpa.CriteriaApiObjects;
 import com.a9ski.jpa.CriteriaBuilderHelper;
 import com.a9ski.jpa.JpaUtils;
@@ -44,6 +46,7 @@ public class UserService extends AbstractService {
 	@javax.ws.rs.Path("count")
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
 	public long countUsers(@QueryParam("filter") final UserFilter filter) {
 		return jpa.countEntities(getFilter(filter), this::createUserPredicates, User.class);
 	}
@@ -56,10 +59,21 @@ public class UserService extends AbstractService {
 	}
 
 	@javax.ws.rs.Path("/list")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public List<User> listUsers(@QueryParam("filter") final UserFilter filter) {
+		return jpa.listEntities(filter, this::createUserPredicates, User.class);
+	}
+
+	@javax.ws.rs.Path("/save")
 	@POST
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<User> listUsers(final UserFilter filter) {
-		return jpa.listEntities(filter, this::createUserPredicates, User.class);
+	@Consumes({ MediaType.APPLICATION_JSON })
+	// final @FormParam("user")
+	public User saveUsers(User user) throws ObjectAlreadyModifiedException {
+		touch(user);
+		return jpa.save(user, true);
 	}
 
 	private QueryConfig createUserPredicates(final CriteriaApiObjects<User> cao, final UserFilter filter) {

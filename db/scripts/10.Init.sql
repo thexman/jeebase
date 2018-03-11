@@ -1,9 +1,9 @@
 SET SESSION SQL_MODE='ANSI';
 
-CREATE SEQUENCE sequenceId START 5000;
+--CREATE SEQUENCE sequenceId START 5000;
 
 CREATE TABLE users (
-	"id" INTEGER NOT NULL,
+	"id" INTEGER NOT NULL AUTO_INCREMENT,
 	"login" VARCHAR(255) NOT NULL,
 	"timezone" VARCHAR(100),
 	"locale" VARCHAR(50),
@@ -27,7 +27,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE roles (
-	"id" INTEGER NOT NULL,
+	"id" INTEGER NOT NULL AUTO_INCREMENT,
 	"name" VARCHAR(255),
 	
 	"creator" INTEGER,
@@ -59,6 +59,8 @@ CREATE TABLE user_roles (
 	CONSTRAINT fk_user_role_userid FOREIGN KEY ("userid") REFERENCES users("id"),
 	CONSTRAINT fk_user_role_roleid FOREIGN KEY ("roleid") REFERENCES roles("id")
 );
+
+ALTER TABLE users AUTO_INCREMENT=5000;
 
 CREATE VIEW user_access AS SELECT u.login, u.password, r.name AS rolename, p.permission FROM user_roles rel INNER JOIN users u ON u.id = rel.userid AND u.deleted = false INNER JOIN roles r ON r.id = rel.roleid AND r.deleted = false INNER JOIN role_permissions p ON r.id = p.roleid;
 

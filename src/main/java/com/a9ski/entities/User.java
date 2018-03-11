@@ -1,27 +1,46 @@
 package com.a9ski.entities;
 
+import java.util.List;
 import java.util.Locale;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import com.a9ski.id.MutableLoginBased;
 import com.a9ski.jpa.LocaleConverter;
 import com.a9ski.jpa.NamedTimeZoneConverter;
+import com.a9ski.json.NamedTimeZoneDeserializer;
 import com.a9ski.utils.TimeZoneList.NamedTimeZone;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+//@formatter:off
+@NamedQueries({
+	@NamedQuery(name = User.NAMED_QUERY_FIND_BY_LOGIN, query = "SELECT u FROM User u WHERE u.login = :login")
+})
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "users")
-public class User extends AuditableEntity {
+//@formatter:on
+public class User extends JsonAuditableEntity implements MutableLoginBased {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 3260478782599962812L;
+
+	public static final String NAMED_QUERY_FIND_BY_LOGIN = "User.findByLogin";
 
 	@Column(name = "login")
 	private String login;
@@ -42,13 +61,19 @@ public class User extends AuditableEntity {
 	@Convert(converter = LocaleConverter.class)
 	private Locale locale;
 
+	@JsonDeserialize(using = NamedTimeZoneDeserializer.class)
 	@Column(name = "timezone")
 	@Convert(converter = NamedTimeZoneConverter.class)
 	private NamedTimeZone timeZone;
 
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.REFRESH })
+	@JoinTable(name = "user_roles", joinColumns = { @JoinColumn(name = "userid") }, inverseJoinColumns = { @JoinColumn(name = "roleid") })
+	private List<Role> roles;
+
 	/**
 	 * @return the login
 	 */
+	@Override
 	public String getLogin() {
 		return login;
 	}
@@ -57,6 +82,7 @@ public class User extends AuditableEntity {
 	 * @param login
 	 *            the login to set
 	 */
+	@Override
 	public void setLogin(final String login) {
 		this.login = login;
 	}
@@ -134,6 +160,14 @@ public class User extends AuditableEntity {
 	 */
 	public void setTimeZone(final NamedTimeZone timeZone) {
 		this.timeZone = timeZone;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
 	}
 
 	/*

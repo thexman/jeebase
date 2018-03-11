@@ -1,15 +1,11 @@
 package com.a9ski.entities;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.a9ski.entities.filters.AuditableEntityFilter;
 import com.a9ski.entities.filters.FilterStringField;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.NONE)
+//@XmlRootElement
 public class UserFilter extends AuditableEntityFilter {
 
 	/**

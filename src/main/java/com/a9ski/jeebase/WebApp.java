@@ -6,8 +6,8 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import com.a9ski.entities.User;
-import com.a9ski.entities.UserFilter;
+import com.a9ski.json.IdentifiableEntityFilterJsonMessageBodyWriter;
+import com.a9ski.json.JsonMessageBodyWriter;
 import com.a9ski.utils.ExtCollectionUtils;
 import com.a9ski.ws.UserService;
 
@@ -16,9 +16,17 @@ public class WebApp extends Application {
 	@Override
 	public Set<Class<?>> getClasses() {
 		final Set<Class<?>> classes = ExtCollectionUtils.addAll(new HashSet<>(), super.getClasses(), null);
+		// classes.add(JacksonFeature.class);
+		classes.add(JsonMessageBodyWriter.class);
+		classes.add(IdentifiableEntityFilterJsonMessageBodyWriter.class);
 		classes.add(UserService.class);
-		classes.add(User.class);
-		classes.add(UserFilter.class);
 		return classes;
 	}
+	//
+	// @Override
+	// public Map<String, Object> getProperties() {
+	// final Map<String, Object> properties = new HashMap<String, Object>();
+	// properties.put("jersey.config.server.disableMoxyJson", true);
+	// return properties;
+	// }
 }

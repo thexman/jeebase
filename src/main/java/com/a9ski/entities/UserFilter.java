@@ -1,8 +1,15 @@
 package com.a9ski.entities;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.a9ski.entities.filters.AuditableEntityFilter;
 import com.a9ski.entities.filters.FilterStringField;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class UserFilter extends AuditableEntityFilter {
 
 	/**
@@ -10,17 +17,26 @@ public class UserFilter extends AuditableEntityFilter {
 	 */
 	private static final long serialVersionUID = -6365195043097356213L;
 
+	@XmlElement
 	private FilterStringField login;
 
+	@XmlElement
 	private FilterStringField firstName;
 
+	@XmlElement
 	private FilterStringField lastName;
 
+	@XmlElement
 	private FilterStringField email;
+
+	public UserFilter() {
+		super();
+	}
 
 	/**
 	 * @return the login
 	 */
+
 	public FilterStringField getLogin() {
 		return login;
 	}

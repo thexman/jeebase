@@ -2,9 +2,6 @@ package com.a9ski.entities;
 
 import java.util.Locale;
 
-import javax.json.bind.annotation.JsonbPropertyOrder;
-import javax.json.bind.annotation.JsonbTransient;
-import javax.json.bind.config.PropertyOrderStrategy;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -16,7 +13,6 @@ import com.a9ski.jpa.LocaleConverter;
 import com.a9ski.jpa.NamedTimeZoneConverter;
 import com.a9ski.utils.TimeZoneList.NamedTimeZone;
 
-@JsonbPropertyOrder(PropertyOrderStrategy.LEXICOGRAPHICAL)
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "users")
@@ -39,16 +35,13 @@ public class User extends AuditableEntity {
 	@Column(name = "email")
 	private String email;
 
-	@JsonbTransient
 	@Column(name = "password")
 	private String password;
 
-	@JsonbTransient
 	@Column(name = "locale")
 	@Convert(converter = LocaleConverter.class)
 	private Locale locale;
 
-	@JsonbTransient
 	@Column(name = "timezone")
 	@Convert(converter = NamedTimeZoneConverter.class)
 	private NamedTimeZone timeZone;

@@ -9,7 +9,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Path;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import com.a9ski.entities.User;
 import com.a9ski.entities.UserFilter;
@@ -38,16 +41,25 @@ public class UserService extends AbstractService {
 		return getFilter(filter, UserFilter.class);
 	}
 
-	@GET
 	@javax.ws.rs.Path("count")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
 	public long countUsers(@QueryParam("filter") final UserFilter filter) {
 		return jpa.countEntities(getFilter(filter), this::createUserPredicates, User.class);
 	}
 
+	@javax.ws.rs.Path("createFilter")
 	@GET
-	@javax.ws.rs.Path("list")
-	public List<User> listUsers(@QueryParam("filter") final UserFilter filter) {
-		return jpa.listEntities(getFilter(filter), this::createUserPredicates, User.class);
+	@Produces({ MediaType.APPLICATION_JSON })
+	public UserFilter createFilter() {
+		return getFilter(null);
+	}
+
+	@javax.ws.rs.Path("/list")
+	@POST
+	@Produces({ MediaType.APPLICATION_JSON })
+	public List<User> listUsers(final UserFilter filter) {
+		return jpa.listEntities(filter, this::createUserPredicates, User.class);
 	}
 
 	private QueryConfig createUserPredicates(final CriteriaApiObjects<User> cao, final UserFilter filter) {

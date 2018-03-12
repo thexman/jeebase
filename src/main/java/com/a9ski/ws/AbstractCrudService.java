@@ -19,6 +19,7 @@ import com.a9ski.exceptions.ObjectAlreadyModifiedException;
 import com.a9ski.jpa.CriteriaApiObjects;
 import com.a9ski.jpa.JpaUtils;
 import com.a9ski.jpa.QueryConfig;
+import com.a9ski.security.AccessChecker;
 
 public abstract class AbstractCrudService<E extends IdentifiableEntity, F extends PageableFilter> extends AbstractService {
 
@@ -28,13 +29,17 @@ public abstract class AbstractCrudService<E extends IdentifiableEntity, F extend
 	protected final JpaUtils jpa = new JpaUtils(() -> em);
 	protected final Class<E> entityClass;
 	protected final Class<F> filterClass;
+	protected final AccessChecker listAccessChecker;
+	protected final AccessChecker saveAccessChecker;
 
 	protected abstract QueryConfig createPredicates(final CriteriaApiObjects<E> cao, final F filter);
 
-	protected AbstractCrudService(final Class<E> entityClass, final Class<F> filterClass) {
+	protected AbstractCrudService(final Class<E> entityClass, final Class<F> filterClass, AccessChecker listAccessChecker, AccessChecker saveAccessChecker) {
 		super();
 		this.entityClass = entityClass;
 		this.filterClass = filterClass;
+		this.listAccessChecker = (listAccessChecker != null ? listAccessChecker : AccessChecker.PERMIT_ALL);
+		this.saveAccessChecker = (saveAccessChecker != null ? saveAccessChecker : AccessChecker.PERMIT_ALL);
 	}
 
 	protected F getFilter(final F filter) {
@@ -46,6 +51,7 @@ public abstract class AbstractCrudService<E extends IdentifiableEntity, F extend
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public long count(@QueryParam("filter") final F filter) {
+		checkAccess(listAccessChecker);
 		return jpa.countEntities(getFilter(filter), this::createPredicates, entityClass);
 	}
 
@@ -61,6 +67,7 @@ public abstract class AbstractCrudService<E extends IdentifiableEntity, F extend
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public List<E> list(@QueryParam("filter") final F filter) {
+		checkAccess(listAccessChecker);
 		return jpa.listEntities(getFilter(filter), this::createPredicates, entityClass);
 	}
 
@@ -69,17 +76,19 @@ public abstract class AbstractCrudService<E extends IdentifiableEntity, F extend
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public E save(E entity) throws ObjectAlreadyModifiedException {
+		checkAccess(saveAccessChecker);
 		if (entity instanceof AuditableEntity) {
 			touch((AuditableEntity) entity);
 		}
 		return jpa.save(entity, true);
 	}
 
-	@javax.ws.rs.Path("/save")
+	@javax.ws.rs.Path("/delete")
 	@DELETE
 	@Produces({ MediaType.APPLICATION_JSON })
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public E delete(E entity) throws ObjectAlreadyModifiedException {
+		checkAccess(saveAccessChecker);
 		if (entity instanceof AuditableEntity) {
 			final AuditableEntity auditableEntity = (AuditableEntity) entity;
 			auditableEntity.setDeleted(true);
@@ -88,7 +97,24 @@ public abstract class AbstractCrudService<E extends IdentifiableEntity, F extend
 		} else {
 			throw new UnsupportedOperationException();
 		}
+	}
 
+	@javax.ws.rs.Path("/clearCache")
+	@GET
+	@Produces({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.APPLICATION_JSON })
+	public void clearCache() {
+		em.getEntityManagerFactory().getCache().evict(entityClass);
+	}
+
+	protected void checkAccess(AccessChecker accessChecker) {
+		if (!accessChecker.hasAccess(getUserPermissions())) {
+			throwSecurityException("Access denied");
+		}
+	}
+
+	protected void throwSecurityException(final String msg) {
+		throw new SecurityException(msg);
 	}
 
 }

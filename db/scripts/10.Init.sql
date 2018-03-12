@@ -73,9 +73,9 @@ INSERT INTO roles(id, name, creator, created, editor, edited, deleted, version) 
 
 insert into role_permissions(roleid, permission) values (1, 'LOGIN');
 insert into role_permissions(roleid, permission) values (1, 'LIST_USERS');
-insert into role_permissions(roleid, permission) values (1, 'ADD_USER');
 insert into role_permissions(roleid, permission) values (1, 'EDIT_USER');
-insert into role_permissions(roleid, permission) values (1, 'DELETE_USER');
+insert into role_permissions(roleid, permission) values (1, 'LIST_ROLES');
+insert into role_permissions(roleid, permission) values (1, 'EDIT_ROLE');
 
 insert into role_permissions(roleid, permission) values (2, 'LOGIN');
 insert into role_permissions(roleid, permission) values (2, 'LIST_USERS');

@@ -11,6 +11,7 @@ import javax.ws.rs.core.Application;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.a9ski.errors.ObjectAlreadyModifiedMapper;
+import com.a9ski.errors.SecurityExceptionMapper;
 import com.a9ski.errors.UnsupportedOperationExceptionMapper;
 import com.a9ski.json.JsonParamConverter;
 import com.a9ski.utils.ExtCollectionUtils;
@@ -26,6 +27,7 @@ public class WebApp extends Application {
 		classes.add(JacksonFeature.class);
 		classes.add(ObjectAlreadyModifiedMapper.class);
 		classes.add(UnsupportedOperationExceptionMapper.class);
+		classes.add(SecurityExceptionMapper.class);
 		classes.add(UserService.class);
 		classes.add(RoleService.class);
 		classes.add(PermissionService.class);

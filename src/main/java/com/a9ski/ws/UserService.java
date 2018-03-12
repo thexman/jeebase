@@ -11,6 +11,8 @@ import com.a9ski.entities.User_;
 import com.a9ski.jpa.CriteriaApiObjects;
 import com.a9ski.jpa.CriteriaBuilderHelper;
 import com.a9ski.jpa.QueryConfig;
+import com.a9ski.security.AccessChecker;
+import com.a9ski.security.Permission;
 
 @javax.ws.rs.Path("/user")
 @Stateless
@@ -19,7 +21,7 @@ import com.a9ski.jpa.QueryConfig;
 public class UserService extends AbstractCrudService<User, UserFilter> {
 
 	public UserService() {
-		super(User.class, UserFilter.class);
+		super(User.class, UserFilter.class, AccessChecker.permit(Permission.LIST_USERS), AccessChecker.permit(Permission.EDIT_USER));
 	}
 
 	@Override
@@ -36,5 +38,4 @@ public class UserService extends AbstractCrudService<User, UserFilter> {
 
 		return new QueryConfig(cbh.getPredicates(), null, null, true);
 	}
-
 }
